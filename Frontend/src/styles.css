@@ -1,0 +1,124 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * ALLSTAG rebuild — bold streetwear design system.
+ * Ink black base + bone paper + molten red accent. Anton display, Inter body.
+ */
+
+@theme inline {
+  --font-display: "Anton", "Impact", sans-serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 6px;
+  --radius-xl: 10px;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-ink: var(--ink);
+  --color-bone: var(--bone);
+  --color-molten: var(--molten);
+  --color-molten-deep: var(--molten-deep);
+  --color-ash: var(--ash);
+  --color-smoke: var(--smoke);
+
+  --shadow-brutal: 6px 6px 0 0 var(--ink);
+  --shadow-brutal-sm: 3px 3px 0 0 var(--ink);
+}
+
+:root {
+  --radius: 4px;
+
+  /* Streetwear palette */
+  --ink: oklch(0.14 0.01 60);
+  --bone: oklch(0.965 0.012 85);
+  --molten: oklch(0.63 0.24 32);
+  --molten-deep: oklch(0.52 0.22 30);
+  --ash: oklch(0.55 0.02 60);
+  --smoke: oklch(0.28 0.015 60);
+
+  --background: var(--bone);
+  --foreground: var(--ink);
+  --card: oklch(1 0 0);
+  --card-foreground: var(--ink);
+  --popover: oklch(1 0 0);
+  --popover-foreground: var(--ink);
+  --primary: var(--ink);
+  --primary-foreground: var(--bone);
+  --secondary: oklch(0.93 0.01 85);
+  --secondary-foreground: var(--ink);
+  --muted: oklch(0.92 0.01 85);
+  --muted-foreground: var(--ash);
+  --accent: var(--molten);
+  --accent-foreground: var(--bone);
+  --destructive: oklch(0.58 0.24 28);
+  --destructive-foreground: var(--bone);
+  --border: oklch(0.86 0.012 80);
+  --input: oklch(0.9 0.01 80);
+  --ring: var(--molten);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+  html {
+    -webkit-font-smoothing: antialiased;
+  }
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+  }
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+    line-height: 0.95;
+  }
+}
+
+@utility text-display {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  line-height: 0.9;
+}
+
+@utility strike-price {
+  text-decoration: line-through;
+  color: var(--color-muted-foreground);
+  font-weight: 400;
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+@utility animate-marquee {
+  animation: marquee 40s linear infinite;
+}
