@@ -1,21 +1,4 @@
-<!-- Brands
-    GET
-    POST
-    DELETE
 
-Categories
-    GET
-    POST
-
-Products
-    GET
-    GET {id}
-    POST
-    PUT {id}
-    DELETE {id}
-
-Product Images
-    POST -->
 <?php
 
 use App\Controllers\BrandController;

@@ -39,13 +39,8 @@ class Database
 
         } catch (PDOException $e) {
 
-            Response::error(
-                "Database connection failed.",
-                500,
-                [
-                    "exception" => $e->getMessage()
-                ]
-            );
+                throw $e;
+
 
         }
 

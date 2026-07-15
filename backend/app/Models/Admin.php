@@ -130,25 +130,25 @@ class Admin extends BaseModel
         return $this->role === 'SUPER_ADMIN';
     }
 
-    // public function toArray(): array
-    // {
-    //     return [
+    public function toArray(): array
+    {
+        return [
 
-    //         'id' => $this->id,
+            'id' => $this->id,
 
-    //         'name' => $this->name,
+            'name' => $this->name,
 
-    //         'email' => $this->email,
+            'email' => $this->email,
 
-    //         'role' => $this->role,
+            'role' => $this->role,
 
-    //         'status' => $this->status,
+            'status' => $this->status,
 
-    //         'last_login' => $this->lastLogin,
+            'last_login' => $this->lastLogin,
 
-    //         'created_at' => $this->createdAt,
+            'created_at' => $this->createdAt,
 
-    //         'updated_at' => $this->updatedAt
-    //     ];
-    // }
+            'updated_at' => $this->updatedAt
+        ];
+    }
 }

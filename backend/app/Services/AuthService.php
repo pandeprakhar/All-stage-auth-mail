@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Repositories\AdminRepository;
+use App\Repositories\OtpRepository;
 use App\Models\Admin;
 use Exception;
 
@@ -18,8 +19,7 @@ class AuthService
     /**
      * Authenticate Admin
      */
-    public function login(string $email, string $password): Admin
-    {
+        public function login(string $email, string $password): array    {
         $admin = $this->adminRepository->findByEmail($email);
 
         if (!$admin) {
@@ -34,13 +34,17 @@ class AuthService
             throw new Exception("Invalid email or password.");
         }
 
-        $this->adminRepository->updateLastLogin(
-            $admin->getId()
-        );
+        $otpService = new OtpService();
 
-        $this->createSession($admin);
+        if (!$otpService->generate($admin)) {
+            throw new Exception("Unable to send OTP.");
+        }
 
-        return $admin;
+        return [
+            'otpRequired' => true,
+            'adminId' => $admin->getId(),
+            'email' => $admin->getEmail()
+        ];
     }
 
     /**
@@ -64,7 +68,37 @@ class AuthService
 
         ];
     }
+    public function verifyOtp(int $adminId, string $otp): array
+    {
+        $otpRepository = new OtpRepository();
 
+        $otpRecord = $otpRepository->findValidOtp(
+            $adminId,
+            $otp
+        );
+
+        if (!$otpRecord) {
+            throw new Exception("Invalid or expired OTP.");
+        }
+
+        $otpRepository->markUsed(
+            $otpRecord->getId()
+        );
+
+        $admin = $this->adminRepository->find($adminId);
+
+        if (!$admin) {
+            throw new Exception("Admin not found.");
+        }
+
+        $this->adminRepository->updateLastLogin(
+            $admin->getId()
+        );
+
+        $this->createSession($admin);
+
+        return $admin->toArray();
+    }
     /**
      * Logout
      */

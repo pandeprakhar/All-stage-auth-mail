@@ -40,13 +40,38 @@ class AuthController
 
         try {
 
-            $admin = $this->authService->login(
-                $data['email'],
-                $data['password']
+           $result = $this->authService->login(
+               $data['email'],
+               $data['password']
+           );
+
+           Response::success(
+               $result,
+               "OTP sent successfully."
+           );
+
+        } catch (Exception $e) {
+
+            Response::error(
+                $e->getMessage(),
+                401
+            );
+
+        }
+    }
+    public function verifyOtp(): void
+    {
+        $data = Request::body();
+
+        try {
+
+            $result = $this->authService->verifyOtp(
+                (int)$data['adminId'],
+                $data['otp']
             );
 
             Response::success(
-                $admin->toArray(),
+                $result,
                 "Login Successful"
             );
 
