@@ -13,7 +13,7 @@ const REMEMBER_KEY = "allstag_admin_remember";
 
 export const ADMIN_API_BASE: string =
   (import.meta.env.VITE_ADMIN_API_URL as string | undefined) ??
-  "http://localhost:8000/api/admin";
+  "http://localhost:8080/api/admin";
 
 /** Auth endpoints live at /api/auth, not /api/admin. */
 export const AUTH_API_BASE: string =

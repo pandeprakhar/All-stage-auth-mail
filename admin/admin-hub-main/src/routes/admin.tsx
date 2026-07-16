@@ -30,16 +30,17 @@ function AdminShell() {
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const isLoginRoute = pathname === "/admin/login";
+  const isAuthRoute = isLoginRoute || pathname.startsWith("/admin/forgot-password");
 
   // Redirect to login when unauthenticated and not already there.
   useEffect(() => {
-    if (status === "unauthenticated" && !isLoginRoute) {
+    if (status === "unauthenticated" && !isAuthRoute) {
       void navigate({ to: "/admin/login", replace: true });
     }
-    if (status === "authenticated" && isLoginRoute) {
+    if (status === "authenticated" && isAuthRoute) {
       void navigate({ to: "/admin/dashboard", replace: true });
     }
-  }, [status, isLoginRoute, navigate]);
+  }, [status, isAuthRoute, navigate]);
 
   if (status === "loading") {
     return (
@@ -49,8 +50,8 @@ function AdminShell() {
     );
   }
 
-  // Login route: render without shell.
-  if (isLoginRoute) {
+  // Auth routes (login/forgot password): render without shell.
+  if (isAuthRoute) {
     return (
       <div className="min-h-screen bg-background text-foreground">
         <Outlet />

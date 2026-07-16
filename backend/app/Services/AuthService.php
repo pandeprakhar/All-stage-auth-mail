@@ -50,7 +50,7 @@ class AuthService
     /**
      * Forgot Password
      */
-    public function forgotPassword(string $email): void
+    public function forgotPassword(string $email): array
     {
         $admin = $this->adminRepository->findByEmail($email);
 
@@ -67,6 +67,10 @@ class AuthService
         if (!$otpService->generate($admin)) {
             throw new Exception("Unable to send OTP.");
         }
+
+        return [
+            'adminId' => $admin->getId()
+        ];
     }
  /**
      * Create Login Session

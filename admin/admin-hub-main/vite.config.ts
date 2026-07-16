@@ -17,7 +17,7 @@ export default defineConfig({
       proxy: {
         // Forward all /api requests to the PHP backend — avoids CORS in dev.
         "/api": {
-          target: "http://localhost:8000",
+          target: "http://localhost:8080",
           changeOrigin: true,
         },
       },

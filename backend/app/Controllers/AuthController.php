@@ -76,12 +76,12 @@ public function forgotPassword(): void
             return;
         }
 
-        $this->authService->forgotPassword(
+        $result = $this->authService->forgotPassword(
             $data['email']
         );
 
         Response::success(
-            null,
+            $result,
             "OTP sent successfully."
         );
 
