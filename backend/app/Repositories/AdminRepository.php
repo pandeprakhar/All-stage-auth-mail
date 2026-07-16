@@ -126,4 +126,23 @@ class AdminRepository extends BaseRepository
 
         return $stmt->fetchColumn() > 0;
     }
+   /**
+    * Update Password
+    */
+   public function updatePassword(
+       int $id,
+       string $password
+   ): bool
+   {
+       $sql = "UPDATE {$this->table}
+               SET password = :password
+               WHERE id = :id";
+
+       $stmt = $this->db->prepare($sql);
+
+       return $stmt->execute([
+           ':id' => $id,
+           ':password' => $password
+       ]);
+   }
 }

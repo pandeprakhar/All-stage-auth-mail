@@ -48,6 +48,27 @@ class AuthService
     }
 
     /**
+     * Forgot Password
+     */
+    public function forgotPassword(string $email): void
+    {
+        $admin = $this->adminRepository->findByEmail($email);
+
+        if (!$admin) {
+            throw new Exception("No account found with this email.");
+        }
+
+        if (!$admin->isActive()) {
+            throw new Exception("Account has been disabled.");
+        }
+
+        $otpService = new OtpService();
+
+        if (!$otpService->generate($admin)) {
+            throw new Exception("Unable to send OTP.");
+        }
+    }
+ /**
      * Create Login Session
      */
     private function createSession(Admin $admin): void
@@ -131,5 +152,60 @@ class AuthService
     public function check(): bool
     {
         return $this->currentUser() !== null;
+    }
+    /**
+     * Verify Forgot Password OTP
+     */
+    public function verifyForgotOtp(int $adminId, string $otp): bool
+    {
+        $otpRepository = new OtpRepository();
+
+        $otpRecord = $otpRepository->findValidOtp(
+            $adminId,
+            $otp
+        );
+
+        if (!$otpRecord) {
+            throw new Exception("Invalid or expired OTP.");
+        }
+
+        $otpRepository->markUsed(
+            $otpRecord->getId()
+        );
+
+        return true;
+    }
+    /**
+     * Reset Password
+     */
+    public function resetPassword(
+        int $adminId,
+        string $password,
+        string $confirmPassword
+    ): void
+    {
+        if ($password !== $confirmPassword) {
+            throw new Exception("Passwords do not match.");
+        }
+
+        $admin = $this->adminRepository->find($adminId);
+
+        if (!$admin) {
+            throw new Exception("Admin not found.");
+        }
+
+        $hashedPassword = password_hash(
+            $password,
+            PASSWORD_DEFAULT
+        );
+
+        if (
+            !$this->adminRepository->updatePassword(
+                $adminId,
+                $hashedPassword
+            )
+        ) {
+            throw new Exception("Unable to reset password.");
+        }
     }
 }
