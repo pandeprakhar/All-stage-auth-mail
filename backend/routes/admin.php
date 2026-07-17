@@ -127,9 +127,27 @@ $router->get(
     [DashboardController::class, 'categories']
 );
 
+use App\Controllers\OrderController;
+use App\Controllers\CustomerController;
+
 $router->get(
     '/api/admin/orders',
-    [DashboardController::class, 'recentOrders']
+    [OrderController::class, 'index']
+);
+
+$router->get(
+    '/api/admin/orders/{id}',
+    [OrderController::class, 'show']
+);
+
+$router->put(
+    '/api/admin/orders/{id}',
+    [OrderController::class, 'update']
+);
+
+$router->get(
+    '/api/admin/customers',
+    [CustomerController::class, 'index']
 );
 
 $router->get(
