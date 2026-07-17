@@ -13,7 +13,11 @@ const REMEMBER_KEY = "allstag_admin_remember";
 
 export const ADMIN_API_BASE: string =
   (import.meta.env.VITE_ADMIN_API_URL as string | undefined) ??
-  "http://localhost:8000/api/admin";
+  "http://localhost:8080/api/admin";
+
+/** Auth endpoints live at /api/auth, not /api/admin. */
+export const AUTH_API_BASE: string =
+  ADMIN_API_BASE.replace(/\/api\/admin\/?$/, "/api/auth");
 
 export function getAdminToken(): string | null {
   if (typeof window === "undefined") return null;
@@ -62,9 +66,11 @@ export async function adminFetch<T = unknown>(
   path: string,
   init: RequestInit = {},
 ): Promise<T> {
+
   const url = path.startsWith("http") ? path : `${ADMIN_API_BASE}${path}`;
   console.log("ADMIN_API_BASE =", ADMIN_API_BASE);
   console.log("REQUEST URL =", url); const token = getAdminToken();
+
   const headers = new Headers(init.headers);
   if (!headers.has("Accept")) headers.set("Accept", "application/json");
   if (init.body && !(init.body instanceof FormData) && !headers.has("Content-Type")) {

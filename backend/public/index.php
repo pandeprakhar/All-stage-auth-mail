@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
@@ -42,23 +43,36 @@ $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
 $dotenv->load();
 
 
+
 use App\Core\Router;
+
+Env::load(dirname(__DIR__));
+
+date_default_timezone_set(
+    $_ENV['TIMEZONE'] ?? 'UTC'
+);
 
 $router = new Router();
 
-/*
-|--------------------------------------------------------------------------
-| Load Routes
-|--------------------------------------------------------------------------
-*/
-
+require_once __DIR__ . '/../routes/auth.php';
 require_once __DIR__ . '/../routes/admin.php';
 require_once __DIR__ . '/../routes/product.php';
 
-/*
-|--------------------------------------------------------------------------
-| Dispatch Request
-|--------------------------------------------------------------------------
-*/
+try {
+    $router->dispatch();
+} catch (\Throwable $e) {
+    http_response_code(500);
 
+<<<<<<< HEAD
+    echo "<pre>";
+    echo "Message: " . $e->getMessage() . PHP_EOL;
+    echo "File: " . $e->getFile() . PHP_EOL;
+    echo "Line: " . $e->getLine() . PHP_EOL;
+    echo PHP_EOL;
+    echo $e->getTraceAsString();
+
+    exit;
+}
+=======
 $router->dispatch();
+>>>>>>> origin/main

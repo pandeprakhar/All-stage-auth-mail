@@ -8,8 +8,7 @@ use PDO;
 class AdminRepository extends BaseRepository
 {
     protected string $table = 'admins';
-    protected string $model = Brand::class;
-
+    protected string $model = Admin::class;
     /**
      * Find admin by email
      */

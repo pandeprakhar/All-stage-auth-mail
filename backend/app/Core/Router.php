@@ -28,13 +28,14 @@ class Router
 
     private function register(string $method, string $uri, callable|array $handler): void
     {
+
         $this->routes[$method][rtrim($uri, '/')] = $handler;
     }
 
    public function dispatch(): void
 {
     $method = Request::method();
-    $uri = Request::uri();
+    $uri = trim(Request::uri());
 
     $handler = null;
     $params = [];

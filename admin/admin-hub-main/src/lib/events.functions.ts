@@ -24,7 +24,7 @@ const CLIENT_ALLOWED = new Set([
 ]);
 
 export const emitEvent = createServerFn({ method: "POST" })
-  .inputValidator((data: EmitInput) => {
+  .validator((data: EmitInput) => {
     if (!CLIENT_ALLOWED.has(data.type)) {
       throw new Error(`Event type not permitted from client: ${data.type}`);
     }

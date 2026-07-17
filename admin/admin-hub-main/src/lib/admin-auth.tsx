@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
-import { adminApi, clearAdminToken, getAdminToken, setAdminToken, AdminApiError } from "./admin-api";
+import { adminFetch, AdminApiError, AUTH_API_BASE } from "./admin-api";
 
 export interface AdminUser {
   id: string | number;
@@ -9,10 +9,18 @@ export interface AdminUser {
   avatar?: string | null;
 }
 
+/** Data returned from POST /api/auth/login on success. */
+export interface LoginOtpData {
+  otpRequired: boolean;
+  adminId: number;
+  email: string;
+}
+
 interface AdminAuthState {
   user: AdminUser | null;
   status: "loading" | "authenticated" | "unauthenticated";
-  login: (email: string, password: string, remember: boolean) => Promise<void>;
+  login: (email: string, password: string) => Promise<LoginOtpData>;
+  verifyOtp: (adminId: number, otp: string) => Promise<void>;
   logout: () => Promise<void>;
   refresh: () => Promise<void>;
 }
@@ -23,16 +31,18 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AdminUser | null>(null);
   const [status, setStatus] = useState<AdminAuthState["status"]>("loading");
 
+  /** Check existing PHP session via GET /api/auth/me. */
   const loadMe = async () => {
-    const fakeUser: AdminUser = {
-      id: 1,
-      name: "Admin",
-      email: "admin@allstag.com",
-      role: "Super Admin",
-    };
-
-    setUser(fakeUser);
-    setStatus("authenticated");
+    try {
+      const me = await adminFetch<AdminUser>(`${AUTH_API_BASE}/me`, {
+        method: "GET",
+      });
+      setUser(me);
+      setStatus("authenticated");
+    } catch {
+      setUser(null);
+      setStatus("unauthenticated");
+    }
   };
 
   useEffect(() => {
@@ -43,28 +53,37 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
     () => ({
       user,
       status,
-      async login(email, password, remember) {
-        const fakeUser: AdminUser = {
-          id: 1,
-          name: "Admin",
-          email: email,
-          role: "Super Admin",
-        };
 
-        setAdminToken("demo-token", remember);
-        setUser(fakeUser);
-        setStatus("authenticated");
+      async login(email, password) {
+        // POST /api/auth/login → returns { otpRequired, adminId, email }
+        const data = await adminFetch<LoginOtpData>(`${AUTH_API_BASE}/login`, {
+          method: "POST",
+          body: JSON.stringify({ email, password }),
+        });
+        // Do NOT set user or navigate — caller must show OTP form.
+        return data;
       },
+
+      async verifyOtp(adminId, otp) {
+        // POST /api/auth/verify-otp → backend creates PHP session
+        await adminFetch(`${AUTH_API_BASE}/verify-otp`, {
+          method: "POST",
+          body: JSON.stringify({ adminId, otp }),
+        });
+        // Session is now established — fetch current user.
+        await loadMe();
+      },
+
       async logout() {
         try {
-          await adminApi.post("/auth/logout");
+          await adminFetch(`${AUTH_API_BASE}/logout`, { method: "POST" });
         } catch {
           /* ignore */
         }
-        clearAdminToken();
         setUser(null);
         setStatus("unauthenticated");
       },
+
       refresh: loadMe,
     }),
     [user, status],

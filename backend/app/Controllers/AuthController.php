@@ -40,13 +40,73 @@ class AuthController
 
         try {
 
-            $admin = $this->authService->login(
-                $data['email'],
-                $data['password']
+           $result = $this->authService->login(
+               $data['email'],
+               $data['password']
+           );
+
+           Response::success(
+               $result,
+               "OTP sent successfully."
+           );
+
+        } catch (Exception $e) {
+
+            Response::error(
+                $e->getMessage(),
+                401
+            );
+
+        }
+    }
+/**
+ * Forgot Password
+ */
+public function forgotPassword(): void
+{
+    try {
+
+        $data = Request::body();
+
+        if (empty($data['email'])) {
+            Response::error(
+                "Email is required.",
+                422
+            );
+            return;
+        }
+
+        $result = $this->authService->forgotPassword(
+            $data['email']
+        );
+
+        Response::success(
+            $result,
+            "OTP sent successfully."
+        );
+
+    } catch (Exception $e) {
+
+        Response::error(
+            $e->getMessage(),
+            400
+        );
+
+    }
+}
+    public function verifyOtp(): void
+    {
+        $data = Request::body();
+
+        try {
+
+            $result = $this->authService->verifyOtp(
+                (int)$data['adminId'],
+                $data['otp']
             );
 
             Response::success(
-                $admin->toArray(),
+                $result,
                 "Login Successful"
             );
 
@@ -90,5 +150,87 @@ class AuthController
         }
 
         Response::success($user);
+    }
+    /**
+     * Verify Forgot Password OTP
+     */
+    public function verifyForgotOtp(): void
+    {
+        try {
+
+            $data = Request::body();
+
+            if (
+                empty($data['adminId']) ||
+                empty($data['otp'])
+            ) {
+
+                Response::error(
+                    "Admin ID and OTP are required.",
+                    422
+                );
+
+                return;
+            }
+
+            $this->authService->verifyForgotOtp(
+                (int)$data['adminId'],
+                $data['otp']
+            );
+
+            Response::success(
+                null,
+                "OTP verified successfully."
+            );
+
+        } catch (Exception $e) {
+
+            Response::error(
+                $e->getMessage(),
+                400
+            );
+
+        }
+    }
+    /**
+     * Reset Password
+     */
+    public function resetPassword(): void
+    {
+        try {
+
+            $data = Request::body();
+
+            if (
+                empty($data['adminId']) ||
+                empty($data['password']) ||
+                empty($data['confirmPassword'])
+            ) {
+                Response::error(
+                    "All fields are required.",
+                    422
+                );
+                return;
+            }
+
+            $this->authService->resetPassword(
+                (int)$data['adminId'],
+                $data['password'],
+                $data['confirmPassword']
+            );
+
+            Response::success(
+                null,
+                "Password reset successfully."
+            );
+
+        } catch (Exception $e) {
+
+            Response::error(
+                $e->getMessage(),
+                400
+            );
+
+        }
     }
 }
