@@ -154,3 +154,30 @@ $router->get(
     '/api/admin/products/low-cost_price',
     [DashboardController::class, 'lowStock']
 );
+
+use App\Controllers\ReportController;
+
+$router->get(
+    '/api/admin/reports/summary',
+    [ReportController::class, 'summary']
+);
+
+$router->get(
+    '/api/admin/reports/orders',
+    [ReportController::class, 'orders']
+);
+
+$router->get(
+    '/api/admin/reports/customers',
+    [ReportController::class, 'customers']
+);
+
+$router->get(
+    '/api/admin/reports/products',
+    [ReportController::class, 'products']
+);
+
+$router->get(
+    '/api/admin/reports/charts',
+    [ReportController::class, 'charts']
+);

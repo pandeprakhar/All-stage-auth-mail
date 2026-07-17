@@ -20,6 +20,30 @@ class OrderController extends BaseController
      */
     public function index(): void
     {
+        $limit = Request::query('limit');
+        if ($limit !== null && $limit !== '') {
+            try {
+                $perPage = (int)$limit;
+                $result = $this->service->getAllPaginated(1, $perPage);
+                
+                $formatted = array_map(function($order) {
+                    return [
+                        'id' => $order->getId(),
+                        'code' => $order->getOrderNumber(),
+                        'customer_name' => $order->getCustomerName() ?? $order->getShippingName(),
+                        'amount' => $order->getTotalAmount(),
+                        'status' => strtolower($order->getOrderStatus()),
+                        'created_at' => $order->getCreatedAt()
+                    ];
+                }, $result['data']);
+
+                $this->success($formatted);
+            } catch (Exception $e) {
+                $this->error($e->getMessage(), 400);
+            }
+            return;
+        }
+
         $page = (int)Request::query('page', 1);
         $perPage = (int)Request::query('per_page', 25);
         $search = Request::query('search');
